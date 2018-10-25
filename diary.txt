@@ -1,1 +1,12 @@
 13/10/18     18:00   18:15   put the first real entry in diary.txt (delete this line!)
+22/10/18     17:00   18:15   Downloaded the thing.
+22/10/18 
+Night time 
+Login
+Time spent: 30min
+
+
+23/10/18
+Week 13 Tuesday
+Using Login FOrm Example: 
+https://getbootstrap.com/docs/4.1/examples/sign-in/

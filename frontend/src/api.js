@@ -1,5 +1,6 @@
 // change this when you integrate with the real API, or when u start using the dev server
-const API_URL = 'http://localhost:8080/data'
+// const API_URL = 'http://localhost:8080/data'
+const API_URL = "http://localhost:5000";
 
 const getJSON = (path, options) => 
     fetch(path, options)
@@ -21,7 +22,59 @@ export default class API {
     } 
 
     makeAPIRequest(path) {
-        return getJSON(`${this.url}/${path}`);
+        // return getJSON(`${this.url}/${path}`);
+        console.log(`path: ${path}`);
+    }
+
+
+    // all requests are in this format: 
+    // path, method, headers (not stringified), [body]
+    newPost(path, method, headers, body) { 
+        console.log(`path: ${path}, header: ${headers}, body: ${body}`);
+        fetch(`${this.url}/${path}`, 
+            {   "method": method, 
+                "headers": headers,
+                "body": JSON.stringify(body),
+            })
+        .then(response => response.json())
+        .then(json => { 
+            console.log("response from uploading new post");
+            console.log(json);
+        });
+        // make the fetch request 
+    }
+
+    // works both for new and old users
+    login(path, method, headers, body) { 
+        return fetch(`${this.url}/${path}`, 
+        {   "method": method, 
+            "headers": headers, 
+            "body": JSON.stringify(body),
+        })
+        .then(response => response.json())
+        .then(json => json.token);
+    }
+
+
+    // returns the data and metadata for all the posts 
+    // followed by a particular user 
+    getPosts(path, method, headers) { 
+        return fetch(`${this.url}/${path}`, 
+            {   "method": method, 
+                "headers": headers
+            })
+            .then(response => response.json()
+            .then(json => json.posts));
+    }
+
+
+
+    getUser(path, method, headers) { 
+        return fetch(`${this.url}/${path}`, 
+            {   "method": method, 
+                "headers": headers
+            })
+        .then(response => response.json());
     }
 
     /**
