@@ -261,8 +261,8 @@ img {
 
 .top-meta-data { 
     font-family: Libre Baskerville, cursive;
-    font-size: 10pt;
-    font-weight: 1200;
+    font-size: 16pt;
+    font-weight: 1800;
     color: black;
 }
 
@@ -285,6 +285,40 @@ img {
     cursor: pointer;
 }
 
+/* User profiles */
+
+.profile { 
+    /* always the same position on the post*/
+    width: 381px;
+    height:279px;
+
+    top: 120px;
+    position: relative;
+    margin-left: auto; margin-right: auto;
+    z-index: 5;
+
+    /* based on boundaries of image */
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #4A444A;
+
+    background-image: url(../images/frames/frame3.png);
+    background-repeat: no-repeat;
+
+    padding-left: 30px;
+    padding-top: 60px;
+    padding-bottom: 20px;
+    padding-right: 50px;
+}
+
+
+.profile-data { 
+    font-family: "Source Sans Pro"; 
+    font-size: 11pt;
+    color: black;
+    line-height: 60%;
+
+}
 
 .top-button { 
     float: right;

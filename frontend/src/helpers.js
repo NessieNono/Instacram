@@ -82,8 +82,11 @@ export var singlePost = function(token) {
         // console.log(formatted_date);
         // let date = createElement("p", formatted_date); 
 
+        // var mydate = new Date(post.meta.published*1000);
+        // console.log("this is the date!!!, ", mydate);
+
         console.log(post.meta.published);
-        let raw_date = new Date(parseInt(post.meta.published));
+        let raw_date = new Date(post.meta.published*1000);
         let formatted_date = raw_date.toLocaleDateString("en-US", 
             { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
         let date = createElement("p", formatted_date); 
@@ -230,7 +233,18 @@ export function checkStore(key) {
 
 
 // ----------------------------------------------------------------------
-// ************************** LEVEL 2 FUNCTIONS **********************
+// ************************** LEVEL 3 FUNCTIONS **********************
+
+// Infinite scroll function 
+export const loadMore = function() { 
+    console.log("loadmore is called!");
+    let basket = 4; 
+    for (var i = 0; i < basket; i++) { 
+        // create element 
+        // append element
+    }
+}
+
 
 
 // ----------------------------------------------------------------------

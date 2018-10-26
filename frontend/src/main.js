@@ -72,8 +72,11 @@ async function authenticateUser(username, password) {
 		{"Content-Type": 'application/json'}, // headers
 		{username: username, password: password}); // body
 	console.log("response, ", json);
-	
+	if (json === null) { 
+		return;
+	}
 	current_token = json.token;
+	current_user = username;
 	console.log("current_token", current_token);
 	initialiseHome(current_token);
 }
@@ -167,7 +170,6 @@ async function getPosts() {
 		main.appendChild(sections[i]); 
 		console.log(sections[i]);
 	}
-
 }
 // activate this when users want to post an image 
 // Post new content Users can upload and post new content from a modal or seperate page via (POST /post)
@@ -258,25 +260,30 @@ function submitform() {
 async function profile() { 
 	console.log("user profile");
 	clearMain();
-	console.log("this is the current token: ", current_token);
-	console.log("this is the current token: ", current_token);
+
+	// lets change the background for no reason
+	let background = document.getElementById("background"); 
+	background.style.backgroundImage = "url(../images/tiles/sky.gif)";
+
 	let query = "user/"+"?username="+current_user;
 	const response = await api.getUser(query, "GET", 
 			{accept: "application/json", Authorization: "Token " + current_token });
-	console.log(response);
+	console.log("response: ", response);
 
 	// now response contains all the information for user
 	let profile_section = createElement("div", "", 
-		{class: "user-profile"});
+		{class: "profile"});
 
-	let username = createElement("h2", response.username);
-	let email = createElement("h3", response.email);
+	let username = createElement("h2", response.username,
+		{class: "top-meta-data"});
+	let email = createElement("h3", `email address: ${response.email}`, 
+		{class: "profile-data"});
 
-	let following = createElement("p", response.following);
+	let following = createElement("p", `following ${response.following.length} users`, 
+		{class: "profile-data"});
 	// use the ids to fetch the names of various users
-
-
-	let posts = createElement("p", response.posts);
+	let posts = createElement("p", `${response.posts.length} posts`, 
+		{class : "profile-data"});
 
 
 	profile_section.appendChild(username);

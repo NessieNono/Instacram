@@ -46,11 +46,20 @@ export default class API {
     }
 
     // works both for new and old users
+    // in the login function, we should indicate if it is successful or not 
     login(path, method, headers, body) { 
         return fetch(`${this.url}/${path}`, 
         {   "method": method, 
             "headers": headers, 
             "body": JSON.stringify(body),
+        })
+        .then(response => { 
+            if (response.status != 200) { 
+                alert("incorrect credentials");
+                return null;
+            } else { 
+                return response;
+            }
         })
         .then(response => response.json());
     }
