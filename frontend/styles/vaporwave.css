@@ -56,7 +56,7 @@ html, body {
     border-bottom: 2px solid #847B8D;
     border-left: 2px solid #E7D4F4; 
     border-right: 2px solid #A38DB5;
-    
+
     background-color: url(../images/tiles/marble2.jpg);
 
     margin: 20px; margin-left:auto; margin-right:auto;
@@ -185,6 +185,87 @@ img {
 }
 
 
+/* LIKE AND COMMENT POPUPS */
+
+.invisible-button { 
+    position: absolute;
+    border: none;
+    background-color: rgba(0,0,0,0);
+    top: 0px;
+    right:6px;
+    width: 44px;
+    height: 18px;
+    z-index: 16;
+    cursor: pointer;
+    margin: 0px;
+ }
+
+
+.popup { 
+    /* always the same position on the post*/
+    width: 284px;
+    height:417px;
+    /* absolute means relative to parent */
+    position: absolute; 
+    bottom: 0px; left: -300px;
+    z-index: 5;
+
+    top: 0px;
+
+    /* based on boundaries of image */
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #4A444A;
+
+    background-image: url(../images/frames/frame1.png);
+    background-repeat: no-repeat;
+}
+
+.popup-right { 
+    /* always the same position on the post*/
+    width: 284px;
+    height:417px;
+    /* absolute means relative to parent */
+    position: absolute; 
+    bottom: 0px; right: -300px;
+    z-index: 5;
+
+    top: 0px;
+
+    /* based on boundaries of image */
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #4A444A;
+
+    background-image: url(../images/frames/frame1.png);
+    background-repeat: no-repeat;
+}
+
+.meta-button { 
+    margin: 0px; margin-right: 10px;
+    border: 2px dotted rgba(0,0,0,.0975);
+    cursor: pointer;
+    font-family: "Source Sans Pro"; 
+    font-size: 10pt;
+}
+
+.meta-data { 
+    font-family: "Source Sans Pro"; 
+    font-size: 10pt;
+    color: black;
+    padding-left: 80px;
+    padding-right: 24px;
+    padding-top: 55px;
+    padding-bottom: 87px;
+}
+
+.top-meta-data { 
+    font-family: Libre Baskerville, cursive;
+    font-size: 10pt;
+    font-weight: 1200;
+    color: black;
+}
+
 .top-button { 
     float: right;
     right: 10px;
@@ -202,6 +283,7 @@ footer {
     width: 100%;
     position: fixed;
     bottom: 0;
+    z-index: 10;
 }
 
 .banner > *, footer > * {

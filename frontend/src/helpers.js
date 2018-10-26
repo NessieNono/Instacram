@@ -10,6 +10,9 @@ const randomHex = () => randomInteger(256).toString(16);
 /* returns a randomColor */
 export const randomColor = () => '#'+range(3).map(randomHex).join('');
 
+import API from './api.js';
+let api = new API();
+
 /**
  * You don't have to use this but it may or may not simplify element creation
  * 
@@ -56,69 +59,131 @@ export function createPostTile(post) {
 
 // given a json object, returns an entire sectoin 
 // uses Promise.all
-export function singlePost(post) { 
+export var singlePost = function(token) { 
 
-    let section = createElement('section', null, { id: post.id, class: 'post' });
-    section.appendChild(makeWindowHeader(post.meta.author));
+    return function(post) {
+        let section = createElement('section', null, { id: post.id, class: 'post' });
+        section.appendChild(makeWindowHeader(post.meta.author));
 
-    // <img src="data:image/png;base64,<string>" />
-    // let thumbnail = createElement("img", null, 
-    //    {src : "data:image/png;base64,"+post.thumbnail});
-    let image = createElement("img", null, 
-        {src : "data:image/png;base64,"+post.src, class:"post-image"});
+        // <img src="data:image/png;base64,<string>" />
+        // let thumbnail = createElement("img", null, 
+        //    {src : "data:image/png;base64,"+post.thumbnail});
+        let image = createElement("img", null, 
+            {src : "data:image/png;base64,"+post.src, class:"post-image"});
 
-    let post_text = createElement("div", null, {class : "post-text"});
-
-
-    // formatting the date correctly 
-    // let raw_date = Date(post.meta.published);
-    // var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    // let formatted_date = raw_date.toLocaleDateString("en-US", options); // a string 
-    // console.log(raw_date); 
-    // console.log(formatted_date);
-    // let date = createElement("p", formatted_date); 
-
-    console.log(post.meta.published);
-    let raw_date = new Date(parseInt(post.meta.published));
-    let formatted_date = raw_date.toLocaleDateString("en-US", 
-        { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-    let date = createElement("p", formatted_date); 
+        let post_text = createElement("div", null, {class : "post-text"});
 
 
-    let likes = createElement("button", post.meta.likes.length + " likes", 
-        {class : "btn btn-primary"}); 
-    likes.addEventListener("click", function (e) { 
-        console.log("show likes");
-        // create list of users 
-        let likers = post.meta.likes;
-        let like_box = createElement("div", likers, 
-            {class: "likebox"}); 
-        section.appendChild(like_box);
+        // formatting the date correctly 
+        // let raw_date = Date(post.meta.published);
+        // var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+        // let formatted_date = raw_date.toLocaleDateString("en-US", options); // a string 
+        // console.log(raw_date); 
+        // console.log(formatted_date);
+        // let date = createElement("p", formatted_date); 
+
+        console.log(post.meta.published);
+        let raw_date = new Date(parseInt(post.meta.published));
+        let formatted_date = raw_date.toLocaleDateString("en-US", 
+            { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+        let date = createElement("p", formatted_date); 
+
+
+        // LIKE POP UPS
+        let likes = createElement("button", post.meta.likes.length + " likes", {class : "meta-button"}); 
+
+        likes.addEventListener("click", (e) => { 
+            let like_popup = createElement("div", "", 
+                {class: "popup"}); // attach in a popup window 
+            fillLikeBox(like_popup, post.meta.likes, token); // fill this popup with a list of users who have liked it 
+            // make the top right corner of this popup an area that is clickable, so that it makes it hidden
+            let close_button = createElement("button", "", 
+                {class: "invisible-button"});
+            close_button.addEventListener("click", function() { 
+                section.removeChild(like_popup);
+            });
+            like_popup.appendChild(close_button);
+
+            section.appendChild(like_popup);
+        });
+
+
+        // COMMENT POP UPS
+        let comments = createElement("button", post.comments.length + " comments", {class: "meta-button"}); 
+        comments.addEventListener("click", function(e) {
+            console.log("show commentors"); 
+            let comment_popup = createElement("div", "", {class: "popup-right"}); // attach in a popup window 
+            fillCommentBox(comment_popup, post.comments, token);
+
+            let close_button2 = createElement("button", "", {class:"invisible-button"});
+            close_button2.addEventListener("click", function() { 
+                section.removeChild(comment_popup);
+            });
+        comment_popup.appendChild(close_button2);
+        section.appendChild(comment_popup);
+
     });
 
-    let comments = createElement("button", post.comments.length + " comments", 
-        {class: "btn btn-primary"}); 
-    comments.addEventListener("click", function(e) {
-        console.log("show commentors"); 
-        let commentors = post.comments; 
-        let comment_box = createElement("div", commentors, 
-            { class: "commentbox"});
-    });
+        // END POPUPS
+        let description_text = createElement("p", post.meta.description_text);
+        // for manipulating with likes and comments 
 
-    let description_text = createElement("p", post.meta.description_text);
+        post_text.appendChild(date);
+        post_text.appendChild(likes);
+        post_text.appendChild(comments);
+        post_text.appendChild(description_text);
+
+        //section.appendChild(thumbnail);
+        section.appendChild(image);
+        section.appendChild(post_text);
+        return section;
+    }
+}
 
 
-    // for manipulating with likes and comments 
+async function fillLikeBox(likebox, list, current_token) { 
+    if (list.length === 0) { 
+        likebox.appendChild(createElement("p", "no one liked this post yet.", {class: "meta-data"}));
+        return;
+    }
+    for (var i = 0; i < list.length; i++) { 
+        // grab the user for that 
+        let query = "user/"+"?id="+list[i];
+        const response = await api.getUser(query, "GET", 
+            {accept: "application/json", "Authorization":"Token " + current_token});
+        // construct a line about the user from the response 
+        let line = createElement("p", `${i+1}. ${response.name} liked this post`, 
+            {class: "meta-data"}); 
+        likebox.appendChild(line);
+    }
+}
 
-    post_text.appendChild(date);
-    post_text.appendChild(likes);
-    post_text.appendChild(comments);
-    post_text.appendChild(description_text);
 
-    //section.appendChild(thumbnail);
-    section.appendChild(image);
-    section.appendChild(post_text);
-    return section;
+async function fillCommentBox(commentBox, list, current_token) { 
+    if (list.length === 0) { 
+        commentBox.appendChild(createElement("p", "no one commented on this post yet.", {class: "meta-data"}));
+        return;
+    }
+    for (var i = 0; i < list.length; i++) { 
+        // grab the user for that 
+        let query = "user/"+"?id="+list[i];
+        const response = await api.getUser(query, "GET", 
+            {accept: "application/json", "Authorization":"Token " + current_token});
+        // construct a line about the user from the response 
+        let line = createElement("p", `${i+1}. ${response.name} commented on this post`, 
+            {class: "meta-data"}); 
+        commentBox.appendChild(line);
+    }
+}
+
+
+export function showLikes() { 
+    console.log("show likes");
+    // create list of users 
+    let likers = post.meta.likes;
+    let like_box = createElement("div", likers, 
+        {class: "likebox"}); 
+    section.appendChild(like_box);
 }
 
 // Given an input element of type=file, grab the data uploaded for use

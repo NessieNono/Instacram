@@ -211,7 +211,7 @@ async function getPosts() {
 	let posts = await api.getPosts("user/feed", "GET", 
 		{"Content-Type": 'application/json', "charset":"utf-8", "Authorization":"Token " + current_token});
 	console.log(posts);
-	let sections = posts.map(singlePost);
+	let sections = posts.map(singlePost(current_token));
 	for (var i = 0; i < sections.length; i++) { 
 		main.appendChild(sections[i]); 
 		console.log(sections[i]);

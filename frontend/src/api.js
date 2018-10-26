@@ -65,8 +65,8 @@ export default class API {
             })
             .then(response => response.json()
             .then(json => json.posts));
+    
     }
-
 
 
     getUser(path, method, headers) { 

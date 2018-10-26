@@ -459,6 +459,49 @@ function post() {
 
 
 
+    // need to retrieve a list of all users who have liked this post 
+
+
+    // the post.meta.likes object is a list
+    // iterate over each element of the list 
+    // and fetch a user from it 
+    let likers_collection = [];  // a list of strings 
+    for (var i = 0; i < post.meta.likes; i++) { 
+        //api.getUser();
+    }
+
+
+// ONE SECTION FOR POPUPS
+
+// LIKE POP UPS
+let likes = createElement("button", post.meta.likes.length + " likes", {class : "meta-button"}); 
+
+likes.addEventListener("click", (e) => { 
+    let like_popup = createElement("div", "", 
+        {class: "popup"}); // attach in a popup window 
+    fillLikeBox(like_popup, post.meta.likes, token); // fill this popup with a list of users who have liked it 
+    // make the top right corner of this popup an area that is clickable, so that it makes it hidden
+    let close_button = createElement("button", "", 
+        {class: "invisible-button"});
+    close_button.addEventListener("click", function() { 
+        section.removeChild(like_popup);
+    });
+    like_popup.appendChild(close_button);
+
+    section.appendChild(like_popup);
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
