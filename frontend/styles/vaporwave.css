@@ -266,6 +266,26 @@ img {
     color: black;
 }
 
+/* New Image Posts */
+
+.image-preview { 
+    position: absolute;
+    max-width: 70%;
+    min-height: 360px;
+    border-radius: 10px;
+    border: 2px dotted grey;
+    margin: 0px;
+    padding: 10px; padding-right: 20px; padding-left: 20px;
+    text-align: center;
+
+}
+
+.upload-button { 
+    font-family: 'IBM Plex Mono', monospace;
+    cursor: pointer;
+}
+
+
 .top-button { 
     float: right;
     right: 10px;

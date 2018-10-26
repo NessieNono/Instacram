@@ -191,6 +191,7 @@ export function showLikes() {
 // so we need to wait for it before it returns 
 
 export function uploadImage(event, callback) {
+    console.log("uploadImage function!!");
     const [ file ] = event.target.files;
     const validFileTypes = [ 'image/jpeg', 'image/png', 'image/jpg' ]
     const valid = validFileTypes.find(type => type === file.type);
@@ -202,9 +203,9 @@ export function uploadImage(event, callback) {
     reader.onload = function(e) {
         // do something with the data result
         const dataURL = e.target.result;
-        const image = createElement('img', null, { src: dataURL });
+        const image = createElement('img', null, { src: dataURL, class: "image_preview"});
         // for preview 
-        document.getElementsByTagName("main")[0].appendChild(image);
+        document.getElementById("upload_form").appendChild(image);
         // this is what happens after loading 
         callback(dataURL);
     };

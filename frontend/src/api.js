@@ -31,7 +31,7 @@ export default class API {
     // path, method, headers (not stringified), [body]
     newPost(path, method, headers, body) { 
         console.log(`path: ${path}, header: ${headers}, body: ${body}`);
-        fetch(`${this.url}/${path}`, 
+        return fetch(`${this.url}/${path}`, 
             {   "method": method, 
                 "headers": headers,
                 "body": JSON.stringify(body),
@@ -40,6 +40,7 @@ export default class API {
         .then(json => { 
             console.log("response from uploading new post");
             console.log(json);
+            return json;
         });
         // make the fetch request 
     }

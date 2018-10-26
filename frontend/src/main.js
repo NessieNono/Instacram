@@ -1,11 +1,13 @@
 // importing named exports we use brackets
-import { createPostTile, uploadImage, createElement, singlePost, makeWindowHeader } from './helpers.js';
+import { createPostTile, uploadImage, createElement, singlePost,makeWindowHeader } from './helpers.js';
 // when importing 'default' exports, use below syntax
 import API from './api.js';
 
 // --------------------------------------------------
 // ******************* MY SECTION ***************** 
 
+// make a global api for use to use 
+let api = new API();
 // global variables 
 let usersList;
 let header = document.getElementsByTagName("header")[0]; 
@@ -14,39 +16,10 @@ let body = document.getElementsByTagName("body")[0];
 let current_token = null;
 let current_user = null;
 
-// make a global api for use to use 
-let api = new API();
-
 // iIIFE FUNCTION
 (function () {
 	let background = createElement("div", "", {id:"background"})
 	body.insertBefore(background, main);
-
-
-
-	// function setTranslate(xPos, yPos, el) {
-	//     el.style.transform = "translate3d(" + xPos + ", " + yPos + "px, 0)";
-	// }
-
-	// window.addEventListener("DOMContentLoaded", scrollLoop, false);
-
-	// var xScrollPosition;
-	// var yScrollPosition;
-
-	// function scrollLoop() {
-	//     xScrollPosition = window.scrollX;
-	//     yScrollPosition = window.scrollY;
-
-	//     setTranslate(0, yScrollPosition * 0.1, background);
-	//     setTranslate(0, yScrollPosition * -0.1, main);
-
-	//     requestAnimationFrame(scrollLoop);
-	// }
-
-
-
-
-
 
     clearMain();
 	register(); 
@@ -146,12 +119,17 @@ async function makeUser(new_username, new_name, new_password, new_email) {
 	homePage(current_token);
 }
 
-
-
 // Based on the feed from a specific user
 function homePage(token) {
 	current_token = token; 
 	clearMain();
+
+	// add a button to to of the page 
+	let home_page = createElement("button", "Home", 
+		{id:"user_profile", class:"top-button"});
+	home_page.addEventListener("click", homePage);
+	header.appendChild(home_page);
+
 	// add a button secion to the top of the page 
 	let post_picture = createElement("button", "Post picture", 
 		{id:"post_picture", class:"top-button"});
@@ -165,47 +143,7 @@ function homePage(token) {
 	header.appendChild(user_profile);
 
 	getPosts();
-
-
-
-	// .then(json => { 
-	// 	let list = json.posts;
-	// 	// console.log(list);
-	// 	let sections = list.map(singlePost);
-	// 	// console.log("section: ", sections);
-
-
-	// 	// append the array of nodes onto the main section
-	// 	for (var i = 0; i < sections.length; i++) { 
-
-
-	// 		sections[i].appendChild(makeWindowHeader("This is a post"));
-
-
-	// 		function addLikeButton(event) { 
-	// 			let current = event.target;
-	// 		    console.log("like this post");
-	// 			let id = current.id;
-
-	// 			let query = "?id=" + id;
-	// 			fetch("http://localhost:5000/post/like"+query, 
-	// 			{   headers: { "Content-Type": 'application/json', Authorization: "Token " + current_token },
-	// 			    method: 'PUT',
-	// 			}).then(response => response.json())
-	// 			.then(json => { 
-	// 			    // console.log(json);
-	// 			});
-	// 		}
-
-	// 		let likebutton = createElement("button", "like",
-	// 		    {id : sections[i].id});
-	// 		likebutton.addEventListener("click", addLikeButton, false);
-	// 		sections[i].appendChild(likebutton);
-	// 		main.append(sections[i]);
-	// 	}
-	// });
 }
-
 
 async function getPosts() { 
 	let posts = await api.getPosts("user/feed", "GET", 
@@ -218,45 +156,75 @@ async function getPosts() {
 	}
 
 }
-
 // activate this when users want to post an image 
 // Post new content Users can upload and post new content from a modal or seperate page via (POST /post)
 // You are only allowed to post if the token is not null
 function post() { 
 	clearMain();
+	// lets change the background for no reason
+	let background = document.getElementById("background"); 
+	background.style.backgroundImage = "url(../images/tiles/night4.gif)";
+
+	let data_part = "";
 
 	// create a form for uploading images 
     let upload_form = createElement("form", "",
-    	{id:"upload_form", method:"get", enctype:"multipart/form-data"});
-    upload_form.onsubmit = function () { alert("hello"); };
+    	{id:"upload_form", method:"get", enctype:"multipart/form-data", class: "form-signin"});
+    upload_form.appendChild(makeWindowHeader("Make a Post"));
+    upload_form.style.backgroundImage = "url(../images/tiles/purple_clouds.gif)";
 
+    let select_image = createElement("input", "How will this show??",
+    	{type:"file", id:"select_image", name:"new_image", accept:".jpg, .jpeg, .png"});
+    upload_form.appendChild(select_image); 
+    select_image.addEventListener("change", (e) => { 
+    	uploadImage(e, (data) => { 
+			var re = new RegExp("(data:.*base64,)");
+			data_part = data.replace(re, ""); 
+			
+    	});
+    }); 
+
+
+   let description_text = createElement("input", "", 
+   	{name: "description_text", type:"text", placeholder:"What are you thinking?"});
+   upload_form.appendChild(description_text);
 
     let upload_image_button = createElement("input", "", 
-    	{id: "upload_image_button", name:"submit", type:"submit", value:"Submit"}); 
+    	{id: "upload_image_button", name:"submit", type:"submit", value:"Upload image", form:"upload_form", class: "upload-button"}); 
+
     upload_image_button.onclick = (e) => false; // to prevent reload
 	upload_form.appendChild(upload_image_button); 
 
-    let select_image = createElement("input", "",
-    	{type:"file", id:"select_image", name:"new_image", accept:".jpg, .jpeg, .png"});
+	upload_image_button.addEventListener('click', async function(e) {
+		let image_path = e.target.form.select_image.value;
+		if (data_part === "") { 
+			alert("invalid image");
+			return; 
+		} else if (description_text.value == "") { 
+			alert("invalid text");
+			return; 
+		}
 
-    // select_image.addEventListener("change", (e) => {
-    // 	uploadImage(e, (data) => {
-    // 		var re = new RegExp("(data:.*base64,)");
-    // 		let data_part = data.replace(re, ""); 
-    // 		api.newPost("post", "POST", 
-    // 		{
-    // 			accept: "application/json", 
-    // 			Authorization: "Token " + current_token,
-    // 			"Content-Type": "application/json"
-    // 		}, 
-    // 		{ 
-				// "description_text" : "placeholder",
-				// "src": data_part
-    // 		});
-    // 	}); 
-    // });
+		let response = await api.newPost("post", "POST", 
+		{
+			accept: "application/json", 
+			Authorization: "Token " + current_token,
+			"Content-Type": "application/json"
+		}, 
+		{ 
+			"description_text" : description_text.value,
+			"src": data_part
+		});
+		console.log("this is the repsone in the main.js", response);
 
-    upload_form.appendChild(select_image); 
+	})
+
+	// let image_preview = createElement("img", "", 
+	// 	{class: "image-preview", src:"../images/other/notepad.gif", id:"image_preview"});
+	// upload_form.appendChild(image_preview);
+
+
+    // AH WHY DOES THIS THIS WORK 
     // upload_form.addEventListener("submit", (e) => 
     // 	{
     // 		e.preventDefault();
@@ -264,11 +232,6 @@ function post() {
     // 	});
 
 
-	// upload_image_button.addEventListener('click', function(clickEvent) {
-	//   const domEvent = new CustomEvent(clickEvent);
-	//   upload_image_button.dispatchEvent(domEvent);
-	//   clickEvent.target.closest('form').dispatchEvent(domEvent)
-	// })
 
     main.appendChild(upload_form);
 }
