@@ -68,11 +68,14 @@ function login() {
 }
 
 async function authenticateUser(username, password) { 
-	current_token = await api.login("auth/login", "POST", 
+	let json = await api.login("auth/login", "POST", 
 		{"Content-Type": 'application/json'}, // headers
 		{username: username, password: password}); // body
-	console.log("git itL", current_token);
-	homePage(current_token);
+	console.log("response, ", json);
+	
+	current_token = json.token;
+	console.log("current_token", current_token);
+	initialiseHome(current_token);
 }
 
 function register() { 
@@ -119,11 +122,9 @@ async function makeUser(new_username, new_name, new_password, new_email) {
 	homePage(current_token);
 }
 
-// Based on the feed from a specific user
-function homePage(token) {
-	current_token = token; 
-	clearMain();
 
+function initialiseHome(token) { 
+	clearMain();
 	// add a button to to of the page 
 	let home_page = createElement("button", "Home", 
 		{id:"user_profile", class:"top-button"});
@@ -141,6 +142,18 @@ function homePage(token) {
 		{id:"user_profile", class:"top-button"});
 	user_profile.addEventListener("click", profile);
 	header.appendChild(user_profile);
+
+	homePage(token);
+	current_token = token; 
+}
+
+// Based on the feed from a specific user
+function homePage(token) {
+
+	clearMain();
+	// lets change the background for no reason
+	let background = document.getElementById("background"); 
+	background.style.backgroundImage = "url(../images/tiles/purple_clouds.gif)";
 
 	getPosts();
 }
@@ -245,7 +258,8 @@ function submitform() {
 async function profile() { 
 	console.log("user profile");
 	clearMain();
-
+	console.log("this is the current token: ", current_token);
+	console.log("this is the current token: ", current_token);
 	let query = "user/"+"?username="+current_user;
 	const response = await api.getUser(query, "GET", 
 			{accept: "application/json", Authorization: "Token " + current_token });

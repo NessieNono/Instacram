@@ -52,8 +52,7 @@ export default class API {
             "headers": headers, 
             "body": JSON.stringify(body),
         })
-        .then(response => response.json())
-        .then(json => json.token);
+        .then(response => response.json());
     }
 
 
@@ -68,7 +67,6 @@ export default class API {
             .then(json => json.posts));
     
     }
-
 
     getUser(path, method, headers) { 
         return fetch(`${this.url}/${path}`, 
